@@ -74,7 +74,7 @@ restaurant-billing-app/
 │   ├── 🔄 store/
 │   │   ├── index.ts
 │   │   ├── authStore.ts
-│   │   ├── menuStore.ts
+│   │   ├── menuStore.ts 
 │   │   ├── orderStore.ts
 │   │   ├── billingStore.ts
 │   │   └── appStore.ts
