@@ -1,0 +1,255 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/restaurant.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  fullName  String
+  role      Role     @default(CASHIER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders   Order[]
+  invoices Invoice[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  menuItems MenuItem[]
+
+  @@map("categories")
+}
+
+model MenuItem {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  cost        Float?      @default(0)
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  itemType    ItemType    @default(VEG)
+  isAvailable Boolean     @default(true)
+  taxRate     Float       @default(0)
+  image       String?
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  orderItems OrderItem[]
+
+  @@map("menu_items")
+}
+
+model Table {
+  id        String      @id @default(cuid())
+  number    String      @unique
+  capacity  Int         @default(4)
+  status    TableStatus @default(AVAILABLE)
+  location  String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  orders Order[]
+
+  @@map("tables")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders   Order[]
+  invoices Invoice[]
+
+  @@map("customers")
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  orderNo    String      @unique
+  type       OrderType   @default(DINE_IN)
+  status     OrderStatus @default(NEW)
+  table      Table?      @relation(fields: [tableId], references: [id])
+  tableId    String?
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  customerId String?
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String
+  subtotal   Float       @default(0)
+  taxAmount  Float       @default(0)
+  total      Float       @default(0)
+  notes      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  orderItems OrderItem[]
+  invoices   Invoice[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId    String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+  quantity   Int      @default(1)
+  unitPrice  Float
+  total      Float
+  notes      String?
+  status     ItemStatus @default(ORDERED)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("order_items")
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  invoiceNo       String        @unique
+  order           Order         @relation(fields: [orderId], references: [id])
+  orderId         String
+  customer        Customer?     @relation(fields: [customerId], references: [id])
+  customerId      String?
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String
+  subtotal        Float
+  taxAmount       Float
+  discountAmount  Float         @default(0)
+  total           Float
+  paidAmount      Float         @default(0)
+  status          InvoiceStatus @default(UNPAID)
+  paymentMode     PaymentMode?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  payments Payment[]
+
+  @@map("invoices")
+}
+
+model Payment {
+  id          String      @id @default(cuid())
+  invoice     Invoice     @relation(fields: [invoiceId], references: [id])
+  invoiceId   String
+  amount      Float
+  method      PaymentMode
+  reference   String?
+  notes       String?
+  createdAt   DateTime    @default(now())
+
+  @@map("payments")
+}
+
+model TaxSetting {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  rate      Float
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tax_settings")
+}
+
+model AppSettings {
+  id            String   @id @default(cuid())
+  restaurantName String  @default("My Restaurant")
+  address       String?
+  phone         String?
+  email         String?
+  gstNumber     String?
+  currency      String   @default("₹")
+  taxRate       Float    @default(18.0)
+  printLogo     Boolean  @default(true)
+  autoBackup    Boolean  @default(true)
+  theme         String   @default("light")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("app_settings")
+}
+
+// Enums
+enum Role {
+  ADMIN
+  MANAGER
+  CASHIER
+  WAITER
+  KITCHEN
+}
+
+enum ItemType {
+  VEG
+  NON_VEG
+  BEVERAGE
+  DESSERT
+}
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  MAINTENANCE
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEAWAY
+  DELIVERY
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PREPARING
+  READY
+  SERVED
+  CANCELLED
+}
+
+enum ItemStatus {
+  ORDERED
+  PREPARING
+  READY
+  SERVED
+}
+
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  PARTIAL
+  CANCELLED
+}
+
+enum PaymentMode {
+  CASH
+  CARD
+  UPI
+  WALLET
+  CREDIT
+}

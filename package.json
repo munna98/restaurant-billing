@@ -1,0 +1,94 @@
+{
+  "name": "restaurant-billing-app",
+  "version": "1.0.0",
+  "description": "Offline-first restaurant billing software",
+  "main": "electron.js",
+  "homepage": "./",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && electron .",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:build": "npm run build && electron-builder",
+    "electron:pack": "npm run build && electron-builder --dir",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "prisma studio",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write src"
+  },
+  "keywords": ["restaurant", "billing", "pos", "offline", "electron"],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "react-hook-form": "^7.43.1",
+    "zustand": "^4.3.6",
+    "date-fns": "^2.29.3",
+    "lucide-react": "^0.263.1",
+    "recharts": "^2.5.0",
+    "jspdf": "^2.5.1",
+    "html2canvas": "^1.4.1",
+    "electron-updater": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "autoprefixer": "^10.4.14",
+    "concurrently": "^7.6.0",
+    "electron": "^23.1.1",
+    "electron-builder": "^23.6.0",
+    "eslint": "^8.35.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.3.4",
+    "postcss": "^8.4.21",
+    "prettier": "^2.8.4",
+    "prisma": "^5.7.1",
+    "tailwindcss": "^3.2.7",
+    "vite": "^4.1.0",
+    "wait-on": "^7.0.1"
+  },
+  "build": {
+    "appId": "com.restaurant.billing",
+    "productName": "Restaurant Billing System",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron.js",
+      "package.json",
+      "prisma/**/*",
+      "data/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "prisma",
+        "to": "prisma"
+      },
+      {
+        "from": "data",
+        "to": "data"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/icon.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/icon.png"
+    }
+  }
+}
