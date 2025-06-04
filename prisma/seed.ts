@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client')
-const bcrypt = require('bcryptjs')
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -20,6 +20,8 @@ async function main() {
     }
   })
 
+  console.log('✅ Admin user created:', adminUser.username)
+
   // Create sample categories
   const categories = [
     { name: 'Starters', description: 'Appetizers and starters' },
@@ -36,32 +38,38 @@ async function main() {
     })
   }
 
+  console.log('✅ Categories created')
+
   // Create sample menu items
   const starterCategory = await prisma.category.findFirst({ where: { name: 'Starters' } })
   const mainCategory = await prisma.category.findFirst({ where: { name: 'Main Course' } })
   const beverageCategory = await prisma.category.findFirst({ where: { name: 'Beverages' } })
   const dessertCategory = await prisma.category.findFirst({ where: { name: 'Desserts' } })
 
+  if (!starterCategory || !mainCategory || !beverageCategory || !dessertCategory) {
+    throw new Error('Categories not found')
+  }
+
   const menuItems = [
     // Starters
-    { name: 'Chicken Wings', price: 299, categoryId: starterCategory.id, itemType: 'NON_VEG' },
-    { name: 'Paneer Tikka', price: 249, categoryId: starterCategory.id, itemType: 'VEG' },
-    { name: 'Fish Fingers', price: 349, categoryId: starterCategory.id, itemType: 'NON_VEG' },
+    { name: 'Chicken Wings', price: 299, categoryId: starterCategory.id, itemType: 'NON_VEG' as const },
+    { name: 'Paneer Tikka', price: 249, categoryId: starterCategory.id, itemType: 'VEG' as const },
+    { name: 'Fish Fingers', price: 349, categoryId: starterCategory.id, itemType: 'NON_VEG' as const },
     
     // Main Course
-    { name: 'Butter Chicken', price: 399, categoryId: mainCategory.id, itemType: 'NON_VEG' },
-    { name: 'Dal Makhani', price: 299, categoryId: mainCategory.id, itemType: 'VEG' },
-    { name: 'Biryani', price: 449, categoryId: mainCategory.id, itemType: 'NON_VEG' },
-    { name: 'Paneer Makhani', price: 349, categoryId: mainCategory.id, itemType: 'VEG' },
+    { name: 'Butter Chicken', price: 399, categoryId: mainCategory.id, itemType: 'NON_VEG' as const },
+    { name: 'Dal Makhani', price: 299, categoryId: mainCategory.id, itemType: 'VEG' as const },
+    { name: 'Biryani', price: 449, categoryId: mainCategory.id, itemType: 'NON_VEG' as const },
+    { name: 'Paneer Makhani', price: 349, categoryId: mainCategory.id, itemType: 'VEG' as const },
     
     // Beverages
-    { name: 'Fresh Lime Soda', price: 89, categoryId: beverageCategory.id, itemType: 'BEVERAGE' },
-    { name: 'Mango Lassi', price: 129, categoryId: beverageCategory.id, itemType: 'BEVERAGE' },
-    { name: 'Masala Chai', price: 49, categoryId: beverageCategory.id, itemType: 'BEVERAGE' },
+    { name: 'Fresh Lime Soda', price: 89, categoryId: beverageCategory.id, itemType: 'BEVERAGE' as const },
+    { name: 'Mango Lassi', price: 129, categoryId: beverageCategory.id, itemType: 'BEVERAGE' as const },
+    { name: 'Masala Chai', price: 49, categoryId: beverageCategory.id, itemType: 'BEVERAGE' as const },
     
     // Desserts
-    { name: 'Gulab Jamun', price: 149, categoryId: dessertCategory.id, itemType: 'DESSERT' },
-    { name: 'Ice Cream', price: 99, categoryId: dessertCategory.id, itemType: 'DESSERT' }
+    { name: 'Gulab Jamun', price: 149, categoryId: dessertCategory.id, itemType: 'DESSERT' as const },
+    { name: 'Ice Cream', price: 99, categoryId: dessertCategory.id, itemType: 'DESSERT' as const }
   ]
 
   for (const item of menuItems) {
@@ -71,6 +79,8 @@ async function main() {
       create: item
     })
   }
+
+  console.log('✅ Menu items created')
 
   // Create sample tables
   for (let i = 1; i <= 12; i++) {
@@ -84,6 +94,8 @@ async function main() {
       }
     })
   }
+
+  console.log('✅ Tables created')
 
   // Create default tax settings
   await prisma.taxSetting.upsert({
@@ -111,7 +123,8 @@ async function main() {
     }
   })
 
-  console.log('✅ Database seeded successfully!')
+  console.log('✅ Settings created')
+  console.log('🎉 Database seeded successfully!')
 }
 
 main()
