@@ -12,7 +12,7 @@ model User {
   username  String   @unique
   password  String
   fullName  String
-  role      Role     @default(CASHIER)
+  role      String   @default("CASHIER") // ADMIN, MANAGER, CASHIER, WAITER, KITCHEN
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -38,20 +38,20 @@ model Category {
 }
 
 model MenuItem {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
   price       Float
-  cost        Float?      @default(0)
-  category    Category    @relation(fields: [categoryId], references: [id])
+  cost        Float?   @default(0)
+  category    Category @relation(fields: [categoryId], references: [id])
   categoryId  String
-  itemType    ItemType    @default(VEG)
-  isAvailable Boolean     @default(true)
-  taxRate     Float       @default(0)
+  itemType    String   @default("VEG") // VEG, NON_VEG, BEVERAGE, DESSERT
+  isAvailable Boolean  @default(true)
+  taxRate     Float    @default(0)
   image       String?
-  sortOrder   Int         @default(0)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   orderItems OrderItem[]
 
@@ -59,13 +59,13 @@ model MenuItem {
 }
 
 model Table {
-  id        String      @id @default(cuid())
-  number    String      @unique
-  capacity  Int         @default(4)
-  status    TableStatus @default(AVAILABLE)
+  id        String   @id @default(cuid())
+  number    String   @unique
+  capacity  Int      @default(4)
+  status    String   @default("AVAILABLE") // AVAILABLE, OCCUPIED, RESERVED, MAINTENANCE
   location  String?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   orders Order[]
 
@@ -88,22 +88,22 @@ model Customer {
 }
 
 model Order {
-  id         String      @id @default(cuid())
-  orderNo    String      @unique
-  type       OrderType   @default(DINE_IN)
-  status     OrderStatus @default(NEW)
-  table      Table?      @relation(fields: [tableId], references: [id])
+  id         String   @id @default(cuid())
+  orderNo    String   @unique
+  type       String   @default("DINE_IN") // DINE_IN, TAKEAWAY, DELIVERY
+  status     String   @default("NEW") // NEW, CONFIRMED, PREPARING, READY, SERVED, CANCELLED
+  table      Table?   @relation(fields: [tableId], references: [id])
   tableId    String?
-  customer   Customer?   @relation(fields: [customerId], references: [id])
+  customer   Customer? @relation(fields: [customerId], references: [id])
   customerId String?
-  user       User        @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
   userId     String
-  subtotal   Float       @default(0)
-  taxAmount  Float       @default(0)
-  total      Float       @default(0)
+  subtotal   Float    @default(0)
+  taxAmount  Float    @default(0)
+  total      Float    @default(0)
   notes      String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   orderItems OrderItem[]
   invoices   Invoice[]
@@ -121,7 +121,7 @@ model OrderItem {
   unitPrice  Float
   total      Float
   notes      String?
-  status     ItemStatus @default(ORDERED)
+  status     String   @default("ORDERED") // ORDERED, PREPARING, READY, SERVED
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -129,23 +129,23 @@ model OrderItem {
 }
 
 model Invoice {
-  id              String        @id @default(cuid())
-  invoiceNo       String        @unique
-  order           Order         @relation(fields: [orderId], references: [id])
+  id              String    @id @default(cuid())
+  invoiceNo       String    @unique
+  order           Order     @relation(fields: [orderId], references: [id])
   orderId         String
-  customer        Customer?     @relation(fields: [customerId], references: [id])
+  customer        Customer? @relation(fields: [customerId], references: [id])
   customerId      String?
-  user            User          @relation(fields: [userId], references: [id])
+  user            User      @relation(fields: [userId], references: [id])
   userId          String
   subtotal        Float
   taxAmount       Float
-  discountAmount  Float         @default(0)
+  discountAmount  Float     @default(0)
   total           Float
-  paidAmount      Float         @default(0)
-  status          InvoiceStatus @default(UNPAID)
-  paymentMode     PaymentMode?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  paidAmount      Float     @default(0)
+  status          String    @default("UNPAID") // PAID, UNPAID, PARTIAL, CANCELLED
+  paymentMode     String?   // CASH, CARD, UPI, WALLET, CREDIT
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   payments Payment[]
 
@@ -153,14 +153,14 @@ model Invoice {
 }
 
 model Payment {
-  id          String      @id @default(cuid())
-  invoice     Invoice     @relation(fields: [invoiceId], references: [id])
+  id          String   @id @default(cuid())
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
   invoiceId   String
   amount      Float
-  method      PaymentMode
+  method      String   // CASH, CARD, UPI, WALLET, CREDIT
   reference   String?
   notes       String?
-  createdAt   DateTime    @default(now())
+  createdAt   DateTime @default(now())
 
   @@map("payments")
 }
@@ -192,64 +192,4 @@ model AppSettings {
   updatedAt     DateTime @updatedAt
 
   @@map("app_settings")
-}
-
-// Enums
-enum Role {
-  ADMIN
-  MANAGER
-  CASHIER
-  WAITER
-  KITCHEN
-}
-
-enum ItemType {
-  VEG
-  NON_VEG
-  BEVERAGE
-  DESSERT
-}
-
-enum TableStatus {
-  AVAILABLE
-  OCCUPIED
-  RESERVED
-  MAINTENANCE
-}
-
-enum OrderType {
-  DINE_IN
-  TAKEAWAY
-  DELIVERY
-}
-
-enum OrderStatus {
-  NEW
-  CONFIRMED
-  PREPARING
-  READY
-  SERVED
-  CANCELLED
-}
-
-enum ItemStatus {
-  ORDERED
-  PREPARING
-  READY
-  SERVED
-}
-
-enum InvoiceStatus {
-  PAID
-  UNPAID
-  PARTIAL
-  CANCELLED
-}
-
-enum PaymentMode {
-  CASH
-  CARD
-  UPI
-  WALLET
-  CREDIT
 }

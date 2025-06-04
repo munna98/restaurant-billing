@@ -52,24 +52,24 @@ async function main() {
 
   const menuItems = [
     // Starters
-    { name: 'Chicken Wings', price: 299, categoryId: starterCategory.id, itemType: 'NON_VEG' as const },
-    { name: 'Paneer Tikka', price: 249, categoryId: starterCategory.id, itemType: 'VEG' as const },
-    { name: 'Fish Fingers', price: 349, categoryId: starterCategory.id, itemType: 'NON_VEG' as const },
+    { name: 'Chicken Wings', price: 299, categoryId: starterCategory.id, itemType: 'NON_VEG' },
+    { name: 'Paneer Tikka', price: 249, categoryId: starterCategory.id, itemType: 'VEG' },
+    { name: 'Fish Fingers', price: 349, categoryId: starterCategory.id, itemType: 'NON_VEG' },
     
     // Main Course
-    { name: 'Butter Chicken', price: 399, categoryId: mainCategory.id, itemType: 'NON_VEG' as const },
-    { name: 'Dal Makhani', price: 299, categoryId: mainCategory.id, itemType: 'VEG' as const },
-    { name: 'Biryani', price: 449, categoryId: mainCategory.id, itemType: 'NON_VEG' as const },
-    { name: 'Paneer Makhani', price: 349, categoryId: mainCategory.id, itemType: 'VEG' as const },
+    { name: 'Butter Chicken', price: 399, categoryId: mainCategory.id, itemType: 'NON_VEG' },
+    { name: 'Dal Makhani', price: 299, categoryId: mainCategory.id, itemType: 'VEG' },
+    { name: 'Biryani', price: 449, categoryId: mainCategory.id, itemType: 'NON_VEG' },
+    { name: 'Paneer Makhani', price: 349, categoryId: mainCategory.id, itemType: 'VEG' },
     
     // Beverages
-    { name: 'Fresh Lime Soda', price: 89, categoryId: beverageCategory.id, itemType: 'BEVERAGE' as const },
-    { name: 'Mango Lassi', price: 129, categoryId: beverageCategory.id, itemType: 'BEVERAGE' as const },
-    { name: 'Masala Chai', price: 49, categoryId: beverageCategory.id, itemType: 'BEVERAGE' as const },
+    { name: 'Fresh Lime Soda', price: 89, categoryId: beverageCategory.id, itemType: 'BEVERAGE' },
+    { name: 'Mango Lassi', price: 129, categoryId: beverageCategory.id, itemType: 'BEVERAGE' },
+    { name: 'Masala Chai', price: 49, categoryId: beverageCategory.id, itemType: 'BEVERAGE' },
     
     // Desserts
-    { name: 'Gulab Jamun', price: 149, categoryId: dessertCategory.id, itemType: 'DESSERT' as const },
-    { name: 'Ice Cream', price: 99, categoryId: dessertCategory.id, itemType: 'DESSERT' as const }
+    { name: 'Gulab Jamun', price: 149, categoryId: dessertCategory.id, itemType: 'DESSERT' },
+    { name: 'Ice Cream', price: 99, categoryId: dessertCategory.id, itemType: 'DESSERT' }
   ]
 
   for (const item of menuItems) {
@@ -90,7 +90,8 @@ async function main() {
       create: {
         number: `T${i.toString().padStart(2, '0')}`,
         capacity: i <= 4 ? 2 : i <= 8 ? 4 : 6,
-        location: i <= 6 ? 'Ground Floor' : 'First Floor'
+        location: i <= 6 ? 'Ground Floor' : 'First Floor',
+        status: 'AVAILABLE'
       }
     })
   }
