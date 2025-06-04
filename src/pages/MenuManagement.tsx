@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Plus, Search, Filter, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 
 interface MenuItem {

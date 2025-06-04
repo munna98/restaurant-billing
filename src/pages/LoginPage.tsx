@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Lock, Mail, Utensils } from 'lucide-react'
+import { Lock, User as UserIcon, Utensils } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import toast from 'react-hot-toast'
 
 interface LoginForm {
-  email: string
+  username: string //
   password: string
 }
 
@@ -14,19 +14,20 @@ const LoginPage = () => {
   const { isAuthenticated, login } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const location = useLocation()
-  
+
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>()
-  
+
   // Redirect if already authenticated
   if (isAuthenticated) {
     const from = location.state?.from?.pathname || '/'
     return <Navigate to={from} replace />
   }
-  
+
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true)
     try {
-      const success = await login(data.email, data.password)
+      // Pass data.username to the login function
+      const success = await login(data.username, data.password)
       if (success) {
         toast.success('Login successful!')
       } else {
@@ -38,7 +39,7 @@ const LoginPage = () => {
       setIsLoading(false)
     }
   }
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -52,32 +53,28 @@ const LoginPage = () => {
             </h1>
             <p className="text-gray-600">Sign in to your account</p>
           </div>
-          
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                Username {/* Changed label from "Email Address" */}
               </label>
               <div className="relative">
-                <Mail size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <UserIcon size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" /> {/* Changed icon */}
                 <input
-                  type="email"
-                  {...register('email', { 
-                    required: 'Email is required',
-                    pattern: {
-                      value: /^\S+@\S+$/i,
-                      message: 'Invalid email address'
-                    }
+                  type="text" // Changed type from "email" to "text"
+                  {...register('username', { // Registered as 'username'
+                    required: 'Username is required',
                   })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Enter your email"
+                  placeholder="Enter your username" // Changed placeholder
                 />
               </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              {errors.username && ( // Checking for 'username' errors
+                <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
@@ -86,7 +83,7 @@ const LoginPage = () => {
                 <Lock size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="password"
-                  {...register('password', { 
+                  {...register('password', {
                     required: 'Password is required',
                     minLength: {
                       value: 6,
@@ -101,7 +98,7 @@ const LoginPage = () => {
                 <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
               )}
             </div>
-            
+
             <button
               type="submit"
               disabled={isLoading}
@@ -110,12 +107,12 @@ const LoginPage = () => {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-          
+
           <div className="mt-6 text-center">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <p className="text-sm text-blue-800 font-medium mb-1">Demo Credentials</p>
               <p className="text-xs text-blue-600">
-                Email: admin@restaurant.com<br />
+                Username: admin<br /> {/* Updated demo credentials */}
                 Password: admin123
               </p>
             </div>

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useAuthStore } from '../store/authStore'
 import { 
   Users, 
@@ -47,7 +46,7 @@ const Dashboard = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          Welcome back, {user?.name}!
+          Welcome back, {"user"}!
         </h1>
         <p className="text-gray-600 mt-1">
           Here's what's happening at your restaurant today
